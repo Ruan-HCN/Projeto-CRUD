@@ -5,7 +5,8 @@
 #include <locale.h>
 
 
-typedef struct {
+struct Funcionario
+{
 	char nome[50];
 	int idade;
 	char cpf[11];
@@ -14,137 +15,270 @@ typedef struct {
 	char cargo[25];
 	char departamento[5];
 	float salario;
-}Funcionario;
+} funcionario;
+//função listar funcionário
+void read_funcionario()
+{
+	FILE *arquivo;
+	arquivo = fopen("funcionarios.txt", "rb");
 
-#define max 20
-
-Funcionario cadastro[max];
-int contador = 0;	
-
-
-void Criar_Funcionario(){
-	
-	if(contador < max){
-		
-		getchar();
-	
-		printf("Digite seu Nome: ");
-    		fgets(Funcionario[contador].nome, 50, stdin);
-    		Funcionario[contador].nome[strcspn(Funcionario[contador].nome, "\n")] = '\0'; 
-
-    		printf("Digite sua Idade: ");
-    		scanf("%d", &Funcionario[contador].idade);
-    		getchar();
-    	
-	    	printf("Digite seu CPF: ");
-	    	fgets(Funcionario[contador].cpf, 11, stdin);
-	    	Funcionario[contador].cpf[strcspn(Funcionario[contador].cpf, "\n")] = '\0';
-	    	
-	    	printf("Digite sua MatrÃ­cula: ");
-	    	fgets(Funcionario[contador].matricula, 15, stdin);
-	    	Funcionario[contador].matricula[strcspn(Funcionario[contador].matricula, "\n")] = '\0';
-	    
-	    	printf("Digite seu E-mail: ");
-	    	fgets(Funcionario[contador].email, 50, stdin);
-	    	Funcionario[contador].email[strcspn(Funcionario[contador].email, "\n")] = '\0';
-	    
-	    	printf("Digite seu Cargo: ");
-	    	fgets(Funcionario[contador].cargo, 25, stdin);
-	    	Funcionario[contador].cargo[strcspn(Funcionario[contador].cargo, "\n")] = '\0';
-	    
-	    	printf("Digite seu Departamento: ");
-	    	fgets(Funcionario[contador].departamento, 5, stdin);
-	    	Funcionario[contador].departamento[strcspn(Funcionario[contador].departamento, "\n")] = '\0';
-	    	
-	    	printf("Digite seu SalÃ¡rio: ");
-	    	scanf("%f", &Funcionario[contador].salario);
-	    	getchar();
-			contador++;    
-	
-	    	printf("\n\nNome: %s", dados.nome);
-	    	printf("\nIdade: %d", dados.idade);
-	    	printf("\nE-mail: %s", dados.email);
-	    	printf("\nCargo: %s", dados.cargo);
-	    	printf("\nDepartamento: %s\n\n", dados.departamento);
-	    	printf("Registrado!\n\n\n");
-	    
-	    	int i;
-	    
-	    	printf("Os dados serÃ£o limpados da tela em...\n");
-	    	for (i = 10; i > 0; i--) {
-	        	printf("%d\n", i);
-	        	Sleep(1000); 
-	    	}
-	    
-			system("cls || clear");
+	if(arquivo == NULL)
+	{
+		printf("algo deu errado");
+	}
+	else
+	{
+		while( fread( &funcionario, sizeof(funcionario), 1, arquivo) == 1)
+		{
+			printf("Nome: %s\n", funcionario.nome);
+			printf("Idade: %d\n", funcionario.idade);
+			printf("CPF: %s\n", funcionario.cpf);
+			printf("Matrícula: %s\n", funcionario.matricula);
+			printf("Email: %s\n", funcionario.email);
+			printf("Cargo: %s\n", funcionario.cargo);
+			printf("Departamento: %s\n", funcionario.departamento);
+			printf("Salário: R$%2f\n", funcionario.salario);
+			printf("---------------------\n\n");
 		}
-		
-		else{
-			printf("Limte de Cadastros atingido! NÃ£o hÃ¡ como adicionar novos FuncionÃ¡rios!\n\n");
-		}
+	}
+	fclose(arquivo);
+	getch();
 }
+//função criar funcionário
+void create_funcionario()
+{
 
-/* Outras FunÃ§Ãµes*/
+	FILE *arquivo;
+	arquivo = fopen("funcionarios.txt", "ab");
 
-void sair(){
+	if(arquivo == NULL)
+	{
+		printf("algo deu errado");
+	}
+	else
+	{
+		do
+		{
+			fflush(stdin);
+			printf("Digite seu Nome:");
+			gets(funcionario.nome);
+
+			fflush(stdin);
+			printf("\nDigite sua Idade:");
+			scanf("%d", &funcionario.idade);
+
+			fflush(stdin);
+			printf("\nDigite seu CPF:");
+			gets(funcionario.cpf);
+
+			fflush(stdin);
+			printf("\nDigite sua Matricula:");
+			gets(funcionario.matricula);
+
+			fflush(stdin);
+			printf("\nDigite seu E-mail:");
+			gets(funcionario.email);
+
+			fflush(stdin);
+			printf("\nDigite seu Cargo:");
+			gets(funcionario.cargo);
+
+			fflush(stdin);
+			printf("\nDigite seu Departamento:");
+			gets(funcionario.departamento);
+
+			fflush(stdin);
+			printf("\nDigite seu Salário:");
+			scanf("%f", &funcionario.salario);
+
+			fwrite(&funcionario, sizeof(funcionario), 1, arquivo);
+
+			int i;
+
+			printf("Os dados serão limpos da tela em...\n");
+			for (i = 10; i > 0; i--)
+			{
+				printf("%d\n", i);
+				Sleep(1000);
+			}
+
+			system("cls || clear");
+			printf("deseja continuar [s/n]");
+			getchar();
+		}
+		while(getche() == 's');
+	}
+	fclose(arquivo);
+}
+//função deletar duncionário
+void delete_funcionario()
+{
+	FILE *originfile;
+	FILE *newfile;
+	char matricula[15];
+
+	originfile = fopen("funcionarios.txt", "rb");
+	newfile = fopen("newfuncionarios.txt", "ab");
+
+	if(originfile == NULL || newfile == NULL)
+	{
+		printf("Algo deu errado");
+	}
+	else
+	{
+		fflush(stdin);
+		printf("Digite a matricula do funcionario a ser exluido: ");
+		gets(matricula);
+
+		while( fread (&funcionario, sizeof(funcionario), 1, originfile) == 1)
+		{
+			if (strcmp(matricula, funcionario.matricula) != 0)
+			{
+				fwrite (&funcionario, sizeof(funcionario), 1, newfile);
+
+			}
+		}
+
+	}
+	fclose(originfile);
+	fclose(newfile);
+	remove("funcionarios.txt");
+	rename("newfuncionarios.txt", "funcionarios.txt");
+	printf("Funcionário removido!");
+	getch();
+}
+//função pesquisar funcionário
+void search()
+{
+	FILE *arquivo;
+	char matricula [15];
+
+	arquivo = fopen("funcionarios.txt", "rb");
+	if(arquivo == NULL)
+	{
+		printf("Algo deu errado\n");
+	}
+	else
+	{
+		fflush(stdin);
+		printf("Digite a matrícula do funcionário: ");
+		gets(matricula);
+		while( fread( &funcionario, sizeof(funcionario), 1, arquivo) == 1)
+		{
+			if( strcmp(matricula, funcionario.matricula ) == 0)
+			{
+				printf("Nome: %s\n", funcionario.nome);
+				printf("Idade: %d\n", funcionario.idade);
+				printf("CPF: %s\n", funcionario.cpf);
+				printf("Matrícula: %s\n", funcionario.matricula);
+				printf("Email: %s\n", funcionario.email);
+				printf("Cargo: %s\n", funcionario.cargo);
+				printf("Departamento: %s\n", funcionario.departamento);
+				printf("Salário: R$%.2f\n", funcionario.salario);
+				printf("---------------------\n\n");
+			}
+
+		}
+	}
+	fclose(arquivo);
+	getche();
+}
+//função atualizar funcionário
+void update_funcionario()
+{
+	char matricula[15];
+	char email[50];
+	char cargo[25];
+	char departamento[5];
+	float salario;
+	int choose;
+
+	search();
+	cabecalho();
+	printf("1.Matrícula");
+	printf("2.Email");
+	printf("3.Cargo\n");
+	printf("3.Departamento\n");
+	printf("4.Salário\n\n");
+
+	fflush(stdin);
+	printf("Qual dado a ser alterado:");
+	gets(choose);
+
+	switch(choose){
+		case 1:
+			
+			printf("informe a nova matricula: ");
+			gets(matricula);
+			break;
+	}
+
+}
+/* Outras Funções*/
+void cabecalho()
+{
+	system("cls||clear");
+	printf("====== Escolha uma das opções abaixo: ======\n\n");
+}
+void sair()
+{
 	printf("Saiu!\n");
 }
 
+//Menu main
+int main()
+{
 
-int main(){
-	
 	setlocale(LC_ALL, "Portuguese");
-	
+
 	int continuar = 1;
-	
-	do{
-	   	printf("====== Escolha uma das opÃ§Ãµes abaixo: ======\n\n");
-	   	printf("1. Criar FuncionÃ¡rio\n");
-	   	printf("2. Ler Todos os FuncionÃ¡rios\n");
-	   	printf("3. Atualizar FuncionÃ¡rio\n");
-	   	printf("4. Deletar FuncionÃ¡rio\n");
-	   	printf("5. Buscar FuncionÃ¡rio por Nome\n");
-	   	printf("6. Buscar FuncionÃ¡rio por CPF\n");
-	   	printf("0. Sair\n\n");
-	   	printf("Escolha: "); 
+
+	do
+	{
+		cabecalho();
+		printf("1. Criar Funcionário\n");
+		printf("2. Ler Todos os Funcionário\n");
+		printf("3. Atualizar Funcionário\n");
+		printf("4. Deletar Funcionário\n");
+		printf("5. Buscar Funcionário por matrícula\n");
+		printf("0. Sair\n\n");
+		printf("Escolha: ");
 		scanf("%d", &continuar);
-	   	printf("=============================================================\n");
-        system("cls || clear");
-        
-        switch(continuar){
-			case 1:
-				Criar_Funcionario();
-				break;
-			
-			case 2:
-				Ler_Funcionario();
-				break;
-			
-			case 3:
-				Atualizar_Funcionario();
-				break;
-			
-			case 4:
-				Deletar_Funcionario();
-				break;
-			
-			case 5:
-				Buscar_Nome();
-				break;
-			
-			case 6:
-				Buscar_CPF();
-				break;
-			
-			case 0:
-				sair();
-				break;
-			
-			default:
-				printf("Digite uma opÃ§Ã£o valida!\n\n");
+		printf("=============================================================\n");
+		system("cls || clear");
+
+		switch(continuar)
+		{
+		case 1:
+			create_funcionario();
+			break;
+
+		case 2:
+			read_funcionario();
+			break;
+
+		case 3:
+			update_funcionario();
+			break;
+
+		case 4:
+			delete_funcionario();
+			break;
+
+		case 5:
+			search();
+			break;
+
+		case 0:
+			sair();
+			break;
+
+		default:
+			printf("Digite uma opção válida!\n\n");
 		}
-		
-	} while(continuar);
-	
+
+	}
+	while(continuar);
+
 	return 0;
 }
